@@ -1,0 +1,3525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#c2410c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Sodanaraga - Modern Restaurant Point of Sale & Thermal Billing App">
+  <title>Sodanaraga | Restaurant POS & Billing</title>
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & SYSTEM RESET
+       ========================================================================== */
+    :root {
+      --primary: #c2410c;         /* Warm Saffron / Terracotta */
+      --primary-dark: #9a3412;
+      --primary-light: #ffedd5;
+      --primary-gradient: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+      
+      --accent: #059669;          /* Emerald for Veg & Success */
+      --accent-red: #dc2626;      /* Non-Veg & Danger */
+      --accent-gold: #d97706;     /* Saffron Gold */
+      --accent-blue: #0284c7;     /* Bluetooth / Connectivity */
+      
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-surface: #f1f5f9;
+      --border: #e2e8f0;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      
+      --header-h: 64px;
+      --bottom-bar-h: 72px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    input, select, textarea {
+      user-select: auto;
+      font-family: inherit;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: calc(var(--bottom-bar-h) + var(--safe-bottom) + 12px);
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    /* ==========================================================================
+       2. HEADER & BRANDING
+       ========================================================================== */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-logo svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .brand-info h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--primary-dark);
+      line-height: 1.15;
+    }
+
+    .brand-info span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Bluetooth Status Pill */
+    .bt-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 38px;
+    }
+
+    .bt-pill.connected {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+
+    .bt-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    .bt-pill.connected .dot {
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Nav Switcher */
+    .nav-toggle-group {
+      display: flex;
+      background: var(--bg-surface);
+      padding: 3px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+    }
+
+    .nav-tab {
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      min-height: 36px;
+    }
+
+    .nav-tab.active {
+      background: var(--bg-card);
+      color: var(--primary-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ==========================================================================
+       3. RESPONSIVE MAIN WORKSPACE (TABLET / DESKTOP SPLIT)
+       ========================================================================== */
+    .main-wrapper {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    @media (min-width: 1024px) {
+      .main-wrapper {
+        grid-template-columns: 1fr 390px;
+        padding: 20px;
+        gap: 20px;
+      }
+      .main-wrapper.full-width {
+        grid-template-columns: 1fr;
+      }
+      body {
+        padding-bottom: 20px;
+      }
+    }
+
+    /* ==========================================================================
+       4. POS SCREEN: LIVE SEARCH, FILTERS & DISH GRID
+       ========================================================================== */
+    .pos-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search-filter-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      width: 18px;
+      height: 18px;
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 42px 10px 40px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s;
+      min-height: 44px;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.1);
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 6px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .categories-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .categories-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill {
+      white-space: nowrap;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      min-height: 40px;
+      flex-shrink: 0;
+    }
+
+    .cat-pill.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px rgba(194, 65, 12, 0.3);
+    }
+
+    /* Dishes Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .menu-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .dish-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .dish-card:active {
+      transform: scale(0.98);
+    }
+
+    .dish-card.out-of-stock {
+      opacity: 0.55;
+      filter: grayscale(0.85);
+      cursor: not-allowed;
+    }
+
+    .dish-img-wrap {
+      width: 100%;
+      height: 125px;
+      background: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .dish-img-wrap {
+        height: 140px;
+      }
+    }
+
+    .dish-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .dish-card:hover .dish-img {
+      transform: scale(1.05);
+    }
+
+    .dish-type-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .type-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .type-dot.veg {
+      background: var(--accent);
+      border: 2px solid var(--accent);
+    }
+    .type-dot.non-veg {
+      background: var(--accent-red);
+      border: 2px solid var(--accent-red);
+    }
+
+    .cart-qty-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+      display: none;
+    }
+
+    .dish-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .dish-category {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .dish-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text-main);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 8px;
+      min-height: 2.3em;
+    }
+
+    .dish-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    .dish-price {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .add-btn {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border: 1px solid rgba(234, 88, 12, 0.25);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 40px;
+      transition: all 0.15s ease;
+    }
+
+    .add-btn:active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .stock-tag {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 23, 42, 0.85);
+      color: white;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       5. CART & CHECKOUT DRAWER / PANEL
+       ========================================================================== */
+    .cart-drawer-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 60;
+      visibility: hidden;
+      pointer-events: none;
+      transition: visibility 0.25s ease;
+    }
+
+    .cart-drawer-container.open {
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .drawer-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.55);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      backdrop-filter: blur(2px);
+    }
+
+    .cart-drawer-container.open .drawer-backdrop {
+      opacity: 1;
+    }
+
+    .cart-drawer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 92vh;
+      background: var(--bg-card);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+    }
+
+    .cart-drawer-container.open .cart-drawer {
+      transform: translateY(0);
+    }
+
+    /* Desktop Transformation to Side Column */
+    @media (min-width: 1024px) {
+      .cart-drawer-container {
+        position: static;
+        width: 100%;
+        height: auto;
+        visibility: visible;
+        pointer-events: auto;
+        z-index: 10;
+      }
+      .drawer-backdrop {
+        display: none;
+      }
+      .cart-drawer {
+        position: sticky;
+        top: calc(var(--header-h) + 20px);
+        transform: none;
+        max-height: calc(100vh - var(--header-h) - 40px);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+      }
+      .drag-handle {
+        display: none !important;
+      }
+      #btn-close-cart {
+        display: none !important;
+      }
+    }
+
+    .drag-handle {
+      width: 44px;
+      height: 5px;
+      background: #cbd5e1;
+      border-radius: var(--radius-full);
+      margin: 10px auto 4px auto;
+      cursor: pointer;
+    }
+
+    .drawer-header {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .drawer-header h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .btn-icon {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+      font-size: 1.2rem;
+    }
+    .btn-icon:hover {
+      background: #fee2e2;
+      color: var(--accent-red);
+      border-color: #fca5a5;
+    }
+
+    .drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Order Details (Table & Customer) */
+    .order-meta-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .table-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .table-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .table-chip {
+      padding: 6px 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    .table-chip.active {
+      background: var(--primary-dark);
+      color: #fff;
+      border-color: var(--primary-dark);
+    }
+
+    .customer-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .input-sm {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      background: #fff;
+      outline: none;
+    }
+    .input-sm:focus {
+      border-color: var(--primary);
+    }
+
+    /* Cart Items */
+    .cart-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cart-empty-state {
+      text-align: center;
+      padding: 24px 10px;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .cart-empty-state svg {
+      width: 44px;
+      height: 44px;
+      color: #cbd5e1;
+    }
+
+    .cart-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      gap: 10px;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cart-item-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 2px;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .qty-btn:active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .qty-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .cart-item-total {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-main);
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* Billing Calculations */
+    .bill-summary {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    .summary-row.bold {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      border-top: 1px dashed var(--border);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    .discount-chips {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chip-btn {
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .chip-btn.active {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+
+    .tax-toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* iOS Style Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Payment Mode Chips */
+    .payment-chips {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding-top: 4px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .payment-chip {
+      flex: 1;
+      padding: 6px;
+      text-align: center;
+      font-size: 0.74rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .payment-chip.active {
+      background: var(--text-main);
+      color: #fff;
+      border-color: var(--text-main);
+    }
+
+    /* Drawer Footer & Checkout Buttons */
+    .drawer-footer {
+      padding: 14px 18px calc(14px + var(--safe-bottom));
+      border-top: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+      min-height: 50px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-checkout:active {
+      transform: scale(0.98);
+      filter: brightness(0.95);
+    }
+
+    .checkout-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      min-height: 44px;
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    /* ==========================================================================
+       6. PERSISTENT FLOATING CART BAR (MOBILE ONLY)
+       ========================================================================== */
+    .floating-cart-bar {
+      position: fixed;
+      bottom: calc(10px + var(--safe-bottom));
+      left: 12px;
+      right: 12px;
+      height: var(--bottom-bar-h);
+      background: var(--primary-dark);
+      color: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 50;
+      cursor: pointer;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .floating-cart-bar.hidden {
+      transform: translateY(140%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (min-width: 1024px) {
+      .floating-cart-bar {
+        display: none !important;
+      }
+    }
+
+    .floating-cart-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cart-icon-bubble {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .cart-count-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--accent-red);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--primary-dark);
+    }
+
+    .floating-cart-text h4 {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .floating-cart-text span {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .floating-cart-action {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+    }
+
+    /* ==========================================================================
+       7. MENU ADMIN SCREEN (PHONE FRIENDLY)
+       ========================================================================== */
+    .admin-screen {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      grid-column: 1 / -1;
+    }
+    .admin-screen.active {
+      display: flex;
+    }
+
+    .admin-header-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .admin-header-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .admin-header-card h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      transition: background 0.15s;
+    }
+    .btn-primary:active {
+      background: var(--primary-dark);
+    }
+
+    .admin-table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dish-admin-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dish-admin-row {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dish-admin-row:last-child {
+      border-bottom: none;
+    }
+
+    .dish-admin-thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .dish-admin-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dish-admin-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dish-admin-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .dish-admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       8. MODALS (ADD/EDIT DISH, RECEIPT PREVIEW, ORDER HISTORY)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      outline: none;
+      min-height: 44px;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    /* Photo Upload Box */
+    .photo-upload-container {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+      background: #f8fafc;
+      position: relative;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .photo-upload-container:hover {
+      border-color: var(--primary);
+    }
+
+    .photo-preview {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      display: none;
+      margin-bottom: 8px;
+    }
+
+    .photo-prompt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .photo-prompt svg {
+      width: 32px;
+      height: 32px;
+      color: var(--primary);
+    }
+
+    .modal-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      background: #fff;
+    }
+
+    /* ==========================================================================
+       9. RECEIPT STYLING (ON SCREEN & PRINT)
+       ========================================================================== */
+    .paper-size-selector {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .paper-btn {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .paper-btn.active {
+      background: var(--primary-dark);
+      color: #fff;
+      border-color: var(--primary-dark);
+    }
+
+    .receipt-container {
+      background: #fff;
+      color: #000;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 16px 12px;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 300px; /* 58mm preview by default */
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      font-size: 11px;
+      line-height: 1.35;
+      transition: max-width 0.2s ease;
+    }
+
+    .receipt-container.size-80mm {
+      max-width: 380px; /* 80mm preview */
+    }
+
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .receipt-brand {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .receipt-sub {
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    .receipt-divider {
+      border-top: 1px dashed #000;
+      margin: 6px 0;
+    }
+
+    .receipt-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    .receipt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0;
+      font-size: 11px;
+    }
+
+    .receipt-table th {
+      text-align: left;
+      border-bottom: 1px dashed #000;
+      padding: 4px 0;
+    }
+
+    .receipt-table td {
+      padding: 3px 0;
+      vertical-align: top;
+    }
+
+    .receipt-table .text-right {
+      text-align: right;
+    }
+
+    .receipt-table .text-center {
+      text-align: center;
+    }
+
+    .receipt-totals {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11px;
+    }
+
+    .receipt-total-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .receipt-grand-total {
+      font-size: 13px;
+      font-weight: 900;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px dashed #000;
+      border-bottom: 1px dashed #000;
+    }
+
+    .receipt-footer {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 11px;
+    }
+
+    /* ==========================================================================
+       10. PURE PRINT MEDIA RULES (@media print)
+       ========================================================================== */
+    #root-print-slip {
+      display: none;
+    }
+
+    @media print {
+      body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      body * {
+        display: none !important;
+      }
+      #root-print-slip, #root-print-slip * {
+        display: block !important;
+        visibility: visible !important;
+      }
+      #root-print-slip {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: var(--print-paper-width, 58mm) !important;
+        max-width: var(--print-paper-width, 58mm) !important;
+        margin: 0 !important;
+        padding: 1.5mm !important;
+      }
+      #root-print-slip .receipt-container {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      #root-print-slip table {
+        display: table !important;
+      }
+      #root-print-slip tr {
+        display: table-row !important;
+      }
+      #root-print-slip td, #root-print-slip th {
+        display: table-cell !important;
+      }
+      #root-print-slip .receipt-meta, 
+      #root-print-slip .receipt-total-row {
+        display: flex !important;
+      }
+      @page {
+        size: auto;
+        margin: 0;
+      }
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== -->
+  <header class="app-header">
+    <div class="brand-group" id="btn-brand-home" title="Sodanaraga POS">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      </div>
+      <div class="brand-info">
+        <h1>Sodanaraga</h1>
+        <span>Food Fest & Restaurant</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Bluetooth Thermal Printer Button -->
+      <button id="btn-bt-connect" class="bt-pill" title="Connect Direct Bluetooth Thermal Printer">
+        <span class="dot"></span>
+        <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
+        <span id="bt-status-label">BT Printer</span>
+      </button>
+
+      <!-- View Switcher Tabs -->
+      <div class="nav-toggle-group">
+        <button id="tab-pos" class="nav-tab active">
+          <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          POS
+        </button>
+        <button id="tab-admin" class="nav-tab">
+          <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+          Admin
+        </button>
+        <button id="tab-history" class="nav-tab" title="Past Bills History">
+          <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN CONTAINER
+       ========================================================================== -->
+  <main class="main-wrapper" id="main-wrapper">
+
+    <!-- 1. POS ORDER TAKING SCREEN -->
+    <section id="pos-view" class="pos-screen">
+      <!-- Search & Category Filter Pills -->
+      <div class="search-filter-card">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Search dishes (e.g. Biryani, Naan, Paneer, Lassi)..." enterkeyhint="search">
+          <button id="btn-search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+        </div>
+
+        <div class="categories-bar" id="category-pills">
+          <button class="cat-pill active" data-cat="all">🍽️ All Items</button>
+          <button class="cat-pill" data-cat="Starters">🍢 Starters</button>
+          <button class="cat-pill" data-cat="Mains">🍛 Mains</button>
+          <button class="cat-pill" data-cat="Breads">🫓 Breads</button>
+          <button class="cat-pill" data-cat="Beverages">🥤 Beverages</button>
+          <button class="cat-pill" data-cat="Desserts">🍨 Desserts</button>
+        </div>
+      </div>
+
+      <!-- Dishes Grid -->
+      <div class="menu-grid" id="dishes-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- 2. MENU ADMIN SCREEN (DAILY MENU MANAGEMENT) -->
+    <section id="admin-view" class="admin-screen">
+      <div class="admin-header-card">
+        <div>
+          <h2>Daily Menu Management</h2>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">
+            Add dishes, take photos with your camera, update prices, and toggle in-stock / out-of-stock.
+          </p>
+        </div>
+        <div class="admin-actions">
+          <button id="btn-add-dish" class="btn-primary">
+            <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add New Dish
+          </button>
+          <button id="btn-reset-menu" class="btn-secondary" title="Restore default Sodanaraga menu items">
+            Restore Defaults
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Dishes List -->
+      <div class="admin-table-wrap">
+        <div class="dish-admin-list" id="admin-dishes-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CART & CHECKOUT (DRAWER ON MOBILE, SPLIT SIDE PANEL ON DESKTOP) -->
+    <div class="cart-drawer-container" id="cart-drawer-container">
+      <div class="drawer-backdrop" id="cart-backdrop"></div>
+      <div class="cart-drawer" id="cart-drawer">
+        <div class="drag-handle" id="drag-handle"></div>
+
+        <div class="drawer-header">
+          <h2>
+            <svg style="width:20px;height:20px;color:var(--primary);" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12zm-7-8c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"/></svg>
+            Current Order
+          </h2>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button id="btn-clear-cart" class="btn-icon" title="Clear Cart">
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+            <button id="btn-close-cart" class="btn-icon" title="Close Drawer">
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div class="drawer-content">
+          <!-- Order Meta: Table / Mode & Customer -->
+          <div class="order-meta-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Table / Order Type</span>
+              <span id="current-token-pill" style="font-size:0.75rem;font-weight:800;color:var(--primary);">Token #--</span>
+            </div>
+            <div class="table-chips" id="table-chips">
+              <button class="table-chip active" data-table="Table 1">T-1</button>
+              <button class="table-chip" data-table="Table 2">T-2</button>
+              <button class="table-chip" data-table="Table 3">T-3</button>
+              <button class="table-chip" data-table="Table 4">T-4</button>
+              <button class="table-chip" data-table="Table 5">T-5</button>
+              <button class="table-chip" data-table="Takeaway">📦 Takeaway</button>
+            </div>
+            <div class="customer-inputs">
+              <input type="text" id="customer-name" class="input-sm" placeholder="Customer Name (optional)">
+              <input type="tel" id="customer-phone" class="input-sm" placeholder="Phone # (optional)">
+            </div>
+          </div>
+
+          <!-- Items in Order -->
+          <div class="cart-items-list" id="cart-items-container">
+            <!-- Dynamically populated cart rows -->
+          </div>
+
+          <!-- Calculation Summary -->
+          <div class="bill-summary">
+            <div class="summary-row">
+              <span>Items Subtotal</span>
+              <span id="sum-subtotal">₹0.00</span>
+            </div>
+
+            <!-- Discount Chips -->
+            <div style="display:flex;flex-direction:column;gap:4px;padding:4px 0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span>Discount</span>
+                <span id="sum-discount" style="color:var(--accent);">-₹0.00</span>
+              </div>
+              <div class="discount-chips">
+                <button class="chip-btn active" data-disc="0">0%</button>
+                <button class="chip-btn" data-disc="5">5%</button>
+                <button class="chip-btn" data-disc="10">10%</button>
+                <button class="chip-btn" data-disc="15">15%</button>
+                <button class="chip-btn" id="btn-custom-disc">Custom</button>
+              </div>
+            </div>
+
+            <!-- GST (5%) Toggle -->
+            <div class="tax-toggle-wrap">
+              <div>
+                <div style="font-weight:700;color:var(--text-main);">GST (5%)</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);">CGST 2.5% + SGST 2.5%</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="tax-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="summary-row" id="row-gst">
+              <span>GST Total</span>
+              <span id="sum-tax">+₹0.00</span>
+            </div>
+
+            <div class="summary-row" id="row-roundoff" style="font-size:0.75rem;">
+              <span>Round Off</span>
+              <span id="sum-roundoff">₹0.00</span>
+            </div>
+
+            <!-- Payment Method Chips -->
+            <div class="payment-chips" id="payment-chips">
+              <button class="payment-chip active" data-pay="Cash">💵 Cash</button>
+              <button class="payment-chip" data-pay="UPI / QR">📱 UPI / QR</button>
+              <button class="payment-chip" data-pay="Card">💳 Card</button>
+            </div>
+
+            <div class="summary-row bold">
+              <span>Grand Total</span>
+              <span id="sum-grandtotal" style="color:var(--primary-dark);">₹0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Checkout Actions -->
+        <div class="drawer-footer">
+          <!-- Primary Checkout: Print & Settle -->
+          <button id="btn-print-bill" class="btn-checkout">
+            <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+            Print Receipt & Settle
+          </button>
+
+          <!-- Dual Connectivity Actions -->
+          <div class="checkout-btn-group">
+            <button id="btn-bt-quick-print" class="btn-secondary" title="Direct raw ESC/POS to Bluetooth printer">
+              <svg style="width:16px;height:16px;color:var(--accent-blue);" viewBox="0 0 24 24" fill="currentColor"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
+              BT Direct Print
+            </button>
+            <button id="btn-preview-receipt" class="btn-secondary" title="Preview receipt slip on screen">
+              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              Preview Slip
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==========================================================================
+       PERSISTENT FLOATING CART BAR (MOBILE ONLY)
+       ========================================================================== -->
+  <div class="floating-cart-bar" id="floating-cart-bar">
+    <div class="floating-cart-info">
+      <div class="cart-icon-bubble">
+        <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        <span class="cart-count-badge" id="float-cart-count">0</span>
+      </div>
+      <div class="floating-cart-text">
+        <h4 id="float-cart-total">₹0.00</h4>
+        <span id="float-cart-summary">0 Items Selected</span>
+      </div>
+    </div>
+    <div class="floating-cart-action">
+      <span>View Bill</span>
+      <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 1: ADD / EDIT DISH (PHONE FRIENDLY ADMIN)
+       ========================================================================== -->
+  <div class="modal-overlay" id="dish-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="dish-modal-title">Add New Dish</h3>
+        <button class="btn-icon" id="btn-close-dish-modal">&times;</button>
+      </div>
+      <form id="dish-form" class="modal-body">
+        <input type="hidden" id="dish-form-id">
+
+        <div class="form-group">
+          <label class="form-label">Dish Name *</label>
+          <input type="text" id="dish-form-name" class="form-input" placeholder="e.g. Mutton Ghee Roast, Butter Naan" required>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select id="dish-form-category" class="form-select" required>
+              <option value="Starters">Starters</option>
+              <option value="Mains">Mains</option>
+              <option value="Breads">Breads</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Desserts">Desserts</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₹) *</label>
+            <input type="number" id="dish-form-price" class="form-input" placeholder="₹ Amount" min="1" step="1" inputmode="numeric" required>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="form-group">
+            <label class="form-label">Diet Indicator</label>
+            <select id="dish-form-diet" class="form-select">
+              <option value="veg">🟢 Veg</option>
+              <option value="non-veg">🔴 Non-Veg</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Daily Availability</label>
+            <select id="dish-form-stock" class="form-select">
+              <option value="true">In Stock</option>
+              <option value="false">Out of Stock</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Phone Camera & Image Compression Zone -->
+        <div class="form-group">
+          <label class="form-label">Dish Photo (Camera / Gallery or URL)</label>
+          <div class="photo-upload-container" id="photo-upload-zone" title="Tap to capture photo or pick from gallery">
+            <img id="photo-preview" class="photo-preview" alt="Preview">
+            <div class="photo-prompt" id="photo-prompt">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+              <strong>Tap to Take Photo or Pick from Gallery</strong>
+              <span>Compressed automatically for phone storage</span>
+            </div>
+            <!-- File input with camera capture support -->
+            <input type="file" id="dish-file-input" accept="image/*" capture="environment" style="display:none;">
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <input type="url" id="dish-form-url" class="form-input" style="font-size:0.78rem;" placeholder="Or paste image URL">
+            <button type="button" id="btn-apply-url" class="btn-secondary" style="min-height:44px;white-space:nowrap;">Load URL</button>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding:10px 0 0 0;">
+          <button type="button" class="btn-secondary" id="btn-cancel-dish">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-save-dish">Save Dish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: RECEIPT PREVIEW MODAL
+       ========================================================================== -->
+  <div class="modal-overlay" id="receipt-modal">
+    <div class="modal-box" style="max-width:400px;">
+      <div class="modal-header">
+        <h3>Thermal Slip Preview</h3>
+        <button class="btn-icon" id="btn-close-receipt-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="background:#f1f5f9;align-items:center;">
+        <!-- Paper Size Switcher (58mm vs 80mm) -->
+        <div class="paper-size-selector">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--text-muted);">Paper Width:</span>
+          <button class="paper-btn active" data-size="58mm">58mm (Mobile)</button>
+          <button class="paper-btn" data-size="80mm">80mm (Desktop)</button>
+        </div>
+
+        <!-- Receipt Card Preview -->
+        <div class="receipt-container" id="receipt-preview-content">
+          <!-- Receipt HTML will be placed here -->
+        </div>
+      </div>
+      <div class="modal-footer" style="flex-direction:column;gap:8px;">
+        <button id="btn-modal-system-print" class="btn-checkout" style="width:100%;">
+          <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+          Print Slip (System / Wi-Fi)
+        </button>
+        <button id="btn-modal-bt-print" class="btn-secondary" style="width:100%;">
+          <svg style="width:16px;height:16px;color:var(--accent-blue);" viewBox="0 0 24 24" fill="currentColor"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
+          Direct Bluetooth Thermal Print
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 3: ORDER HISTORY & SALES LOG
+       ========================================================================== -->
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal-box" style="max-width:540px;">
+      <div class="modal-header">
+        <h3>Past Invoices & Sales</h3>
+        <button class="btn-icon" id="btn-close-history-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span id="history-summary-stats" style="font-size:0.85rem;font-weight:700;color:var(--text-main);">0 Invoices Today</span>
+          <button id="btn-clear-history" class="btn-secondary" style="font-size:0.75rem;padding:4px 8px;min-height:30px;">Clear History</button>
+        </div>
+        <div id="history-items-list" style="display:flex;flex-direction:column;gap:8px;">
+          <!-- Dynamically populated past orders -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       DEDICATED PRINT AREA (PURE FOR @media print)
+       ========================================================================== -->
+  <div id="root-print-slip">
+    <div class="receipt-container" id="pure-print-content"></div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ==========================================================================
+       APPLICATION SCRIPT (AUDIO, STORAGE, BLUETOOTH ESC/POS, UI & CONTROLLER)
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       A. ZERO-ASSET WEB AUDIO SYNTHESIZER
+       ========================================================================== */
+    class AudioFeedback {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+      playBip() {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(850, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(1250, this.ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.08);
+        } catch(e) {}
+      }
+      playChime() {
+        try {
+          this.init();
+          if (!this.ctx) return;
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+          const notes = [523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+          notes.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.06);
+            gain.gain.setValueAtTime(0.14, this.ctx.currentTime + idx * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.06 + 0.28);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.06);
+            osc.stop(this.ctx.currentTime + idx * 0.06 + 0.32);
+          });
+        } catch(e) {}
+      }
+    }
+    const audioFx = new AudioFeedback();
+
+    const FALLBACK_DISH_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ffedd5'/%3E%3Ctext x='50' y='55' font-size='28' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E";
+
+    /* ==========================================================================
+       B. DEFAULT SEED MENU ITEMS
+       ========================================================================== */
+    const DEFAULT_DISHES = [
+      {
+        id: "dish-1",
+        name: "Sodanaraga Special Dum Biryani",
+        category: "Mains",
+        price: 280,
+        diet: "non-veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=60"
+      },
+      {
+        id: "dish-2",
+        name: "Paneer Butter Masala",
+        category: "Mains",
+        price: 240,
+        diet: "veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=60"
+      },
+      {
+        id: "dish-3",
+        name: "Tandoori Chicken Tikka",
+        category: "Starters",
+        price: 260,
+        diet: "non-veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=500&auto=format&fit=crop&q=60"
+      },
+      {
+        id: "dish-4",
+        name: "Crispy Corn Pepper Salt",
+        category: "Starters",
+        price: 180,
+        diet: "veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=60"
+      },
+      {
+        id: "dish-5",
+        name: "Butter Garlic Naan",
+        category: "Breads",
+        price: 60,
+        diet: "veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format&fit=crop&q=60"
+      },
+      {
+        id: "dish-6",
+        name: "Royal Mango Lassi",
+        category: "Beverages",
+        price: 90,
+        diet: "veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&auto=format&fit=crop&q=60"
+      },
+      {
+        id: "dish-7",
+        name: "Sizzling Gulab Jamun & Ice Cream",
+        category: "Desserts",
+        price: 130,
+        diet: "veg",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=500&auto=format&fit=crop&q=60"
+      }
+    ];
+
+    /* ==========================================================================
+       C. LOCAL STORAGE REPOSITORY
+       ========================================================================== */
+    const Storage = {
+      KEY_DISHES: 'sodanaraga_dishes_v2',
+      KEY_INVOICE_NUM: 'sodanaraga_inv_num_v2',
+      KEY_TOKEN_NUM: 'sodanaraga_token_num_v2',
+      KEY_HISTORY: 'sodanaraga_order_history_v2',
+      KEY_PAPER_SIZE: 'sodanaraga_paper_size_v2',
+
+      getDishes() {
+        const raw = localStorage.getItem(this.KEY_DISHES);
+        if (!raw) {
+          this.setDishes(DEFAULT_DISHES);
+          return DEFAULT_DISHES;
+        }
+        try {
+          return JSON.parse(raw);
+        } catch(e) {
+          return DEFAULT_DISHES;
+        }
+      },
+      setDishes(dishes) {
+        localStorage.setItem(this.KEY_DISHES, JSON.stringify(dishes));
+      },
+      getNextInvoice() {
+        let current = parseInt(localStorage.getItem(this.KEY_INVOICE_NUM) || '1001', 10);
+        localStorage.setItem(this.KEY_INVOICE_NUM, (current + 1).toString());
+        return current;
+      },
+      getNextToken() {
+        let current = parseInt(localStorage.getItem(this.KEY_TOKEN_NUM) || '1', 10);
+        let next = current + 1;
+        if (next > 99) next = 1;
+        localStorage.setItem(this.KEY_TOKEN_NUM, next.toString());
+        return current;
+      },
+      peekCurrentToken() {
+        return parseInt(localStorage.getItem(this.KEY_TOKEN_NUM) || '1', 10);
+      },
+      saveOrder(order) {
+        let history = this.getHistory();
+        history.unshift(order);
+        if (history.length > 50) history = history.slice(0, 50);
+        localStorage.setItem(this.KEY_HISTORY, JSON.stringify(history));
+      },
+      getHistory() {
+        try {
+          return JSON.parse(localStorage.getItem(this.KEY_HISTORY) || '[]');
+        } catch(e) {
+          return [];
+        }
+      },
+      clearHistory() {
+        localStorage.removeItem(this.KEY_HISTORY);
+      },
+      getPaperSize() {
+        return localStorage.getItem(this.KEY_PAPER_SIZE) || '58mm';
+      },
+      setPaperSize(size) {
+        localStorage.setItem(this.KEY_PAPER_SIZE, size);
+      }
+    };
+
+    /* ==========================================================================
+       D. TOAST NOTIFICATIONS
+       ========================================================================== */
+    function showToast(msg, icon = '✓') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+      container.appendChild(toast);
+      
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 250);
+      }, 2600);
+    }
+
+    /* ==========================================================================
+       E. WEB BLUETOOTH THERMAL PRINTER (ESC/POS ENGINE)
+       ========================================================================== */
+    class BluetoothThermalPrinter {
+      constructor() {
+        this.device = null;
+        this.characteristic = null;
+        this.isConnected = false;
+        
+        // Comprehensive list of Thermal Bluetooth UUIDs
+        this.serviceUUIDs = [
+          '000018f0-0000-1000-8000-00805f9b34fb', // Common POS / MPT Printer Service
+          '0000ff00-0000-1000-8000-00805f9b34fb',
+          '49535343-fe7d-4ae5-8fa9-9fafd205e455', // ISSC UART
+          '0000fee7-0000-1000-8000-00805f9b34fb',
+          'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+          '0000af30-0000-1000-8000-00805f9b34fb',
+          '0000ae00-0000-1000-8000-00805f9b34fb'
+        ];
+      }
+
+      isSupported() {
+        return !!(navigator.bluetooth && navigator.bluetooth.requestDevice);
+      }
+
+      async connect() {
+        if (!this.isSupported()) {
+          showToast('Web Bluetooth is not supported in this browser. Use Chrome on Android or System Print.', '⚠️');
+          return false;
+        }
+
+        try {
+          showToast('Searching for Bluetooth Thermal Printers...', '🔍');
+          this.device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: this.serviceUUIDs
+          });
+
+          this.device.addEventListener('gattserverdisconnected', () => {
+            this.onDisconnected();
+          });
+
+          const server = await this.device.gatt.connect();
+          
+          let foundChar = null;
+          // Check standard printer services
+          for (const sUuid of this.serviceUUIDs) {
+            try {
+              const service = await server.getPrimaryService(sUuid);
+              const characteristics = await service.getCharacteristics();
+              for (const c of characteristics) {
+                if (c.properties.write || c.properties.writeWithoutResponse) {
+                  foundChar = c;
+                  break;
+                }
+              }
+              if (foundChar) break;
+            } catch(e) {}
+          }
+
+          // Fallback discovery
+          if (!foundChar) {
+            try {
+              const services = await server.getPrimaryServices();
+              for (const service of services) {
+                const chars = await service.getCharacteristics();
+                for (const c of chars) {
+                  if (c.properties.write || c.properties.writeWithoutResponse) {
+                    foundChar = c;
+                    break;
+                  }
+                }
+                if (foundChar) break;
+              }
+            } catch(e) {}
+          }
+
+          if (!foundChar) {
+            throw new Error('No writable thermal printer characteristic found.');
+          }
+
+          this.characteristic = foundChar;
+          this.isConnected = true;
+          this.updateUIStatus(true, this.device.name || 'BT Printer');
+          showToast(`Connected: ${this.device.name || 'Thermal Printer'}!`, '🖨️');
+          return true;
+        } catch(error) {
+          console.warn('Bluetooth connection error:', error);
+          if (error.name !== 'NotFoundError') {
+            showToast(error.message || 'Bluetooth connection failed', '❌');
+          }
+          this.onDisconnected();
+          return false;
+        }
+      }
+
+      disconnect() {
+        if (this.device && this.device.gatt.connected) {
+          this.device.gatt.disconnect();
+        }
+        this.onDisconnected();
+      }
+
+      onDisconnected() {
+        this.isConnected = false;
+        this.characteristic = null;
+        this.device = null;
+        this.updateUIStatus(false);
+      }
+
+      updateUIStatus(connected, name = 'BT Printer') {
+        const pill = document.getElementById('btn-bt-connect');
+        const label = document.getElementById('bt-status-label');
+        if (connected) {
+          pill.classList.add('connected');
+          label.textContent = name.length > 10 ? name.slice(0, 10) + '..' : name;
+        } else {
+          pill.classList.remove('connected');
+          label.textContent = 'BT Printer';
+        }
+      }
+
+      async printRaw(bytes) {
+        if (!this.isConnected || !this.characteristic) {
+          const ok = await this.connect();
+          if (!ok) return false;
+        }
+
+        try {
+          const chunkSize = 100;
+          for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.slice(i, i + chunkSize);
+            if (this.characteristic.properties.writeWithoutResponse) {
+              await this.characteristic.writeValueWithoutResponse(chunk);
+            } else {
+              await this.characteristic.writeValue(chunk);
+            }
+            await new Promise(r => setTimeout(r, 25));
+          }
+          showToast('Receipt printed via Bluetooth!', '🖨️');
+          return true;
+        } catch(err) {
+          console.error('BT Print error:', err);
+          showToast('BT print error. Falling back to System Print...', '⚠️');
+          return false;
+        }
+      }
+
+      encodeReceipt(order, paperWidth = '58mm') {
+        const ESC = 0x1B;
+        const GS = 0x1D;
+        const bytes = [];
+        const is80 = paperWidth === '80mm';
+        const cols = is80 ? 48 : 32;
+
+        const writeStr = (str) => {
+          for (let i = 0; i < str.length; i++) {
+            bytes.push(str.charCodeAt(i) & 0xFF);
+          }
+        };
+
+        const formatTwoCols = (left, right) => {
+          let space = cols - left.length - right.length;
+          if (space < 1) space = 1;
+          return left + ' '.repeat(space) + right + '\n';
+        };
+
+        const formatItemLine = (name, qty, rate, total) => {
+          if (is80) {
+            // 48 columns: Name(24) Qty(6) Rate(9) Total(9)
+            let n = (name || '').slice(0, 24).padEnd(24, ' ');
+            let q = String(qty).padStart(6, ' ');
+            let r = String(rate).padStart(9, ' ');
+            let t = String(total).padStart(9, ' ');
+            return n + q + r + t + '\n';
+          } else {
+            // 32 columns: Name(14) Qty(3) Rate(7) Total(8)
+            let n = (name || '').slice(0, 14).padEnd(14, ' ');
+            let q = String(qty).padStart(3, ' ');
+            let r = String(rate).padStart(7, ' ');
+            let t = String(total).padStart(8, ' ');
+            return n + q + r + t + '\n';
+          }
+        };
+
+        const divider = '-'.repeat(cols) + '\n';
+        const doubleDivider = '='.repeat(cols) + '\n';
+
+        // 1. Initialize
+        bytes.push(ESC, 0x40);
+
+        // 2. Header
+        bytes.push(ESC, 0x61, 0x01); // Center Align
+        bytes.push(GS, 0x21, 0x11);  // Double size
+        bytes.push(ESC, 0x45, 0x01);  // Bold ON
+        writeStr("SODANARAGA\n");
+        bytes.push(GS, 0x21, 0x00);  // Normal size
+        bytes.push(ESC, 0x45, 0x00);  // Bold OFF
+        writeStr("Authentic Food & Flavors\n");
+        writeStr("Phone: +91 98765 43210\n");
+        writeStr(doubleDivider);
+
+        // 3. Metadata
+        bytes.push(ESC, 0x61, 0x00); // Left Align
+        writeStr(formatTwoCols(`Inv: #${order.invoiceNo}`, `Token: #${order.tokenNo}`));
+        writeStr(formatTwoCols(`Date: ${order.date}`, `Time: ${order.time}`));
+        writeStr(formatTwoCols(`Type: ${order.table}`, order.customerName ? `Cust: ${order.customerName}` : ''));
+        writeStr(divider);
+        
+        if (is80) {
+          writeStr("ITEM                        QTY     RATE    TOTAL\n");
+        } else {
+          writeStr("ITEM           QTY   RATE   TOTAL\n");
+        }
+        writeStr(divider);
+
+        // 4. Items
+        order.items.forEach(item => {
+          writeStr(formatItemLine(item.name, item.qty, item.price, item.qty * item.price));
+        });
+        writeStr(divider);
+
+        // 5. Calculations
+        writeStr(formatTwoCols("Subtotal:", `Rs.${order.subtotal.toFixed(2)}`));
+        if (order.discountAmt > 0) {
+          writeStr(formatTwoCols(`Discount (${order.discountPercent}%):`, `-Rs.${order.discountAmt.toFixed(2)}`));
+        }
+        if (order.taxAmt > 0) {
+          writeStr(formatTwoCols("CGST (2.5%):", `+Rs.${(order.taxAmt / 2).toFixed(2)}`));
+          writeStr(formatTwoCols("SGST (2.5%):", `+Rs.${(order.taxAmt / 2).toFixed(2)}`));
+        }
+        if (order.roundOff !== 0) {
+          writeStr(formatTwoCols("Round Off:", `${order.roundOff > 0 ? '+' : ''}Rs.${order.roundOff.toFixed(2)}`));
+        }
+
+        // 6. Grand Total
+        writeStr(divider);
+        bytes.push(ESC, 0x45, 0x01); // Bold ON
+        bytes.push(GS, 0x21, 0x01); // Double height
+        writeStr(formatTwoCols("GRAND TOTAL:", `Rs.${order.grandTotal.toFixed(2)}`));
+        bytes.push(GS, 0x21, 0x00); // Normal size
+        bytes.push(ESC, 0x45, 0x00); // Bold OFF
+        writeStr(divider);
+
+        if (order.paymentMethod) {
+          writeStr(formatTwoCols("Payment Mode:", `${order.paymentMethod} (Paid)`));
+          writeStr(divider);
+        }
+
+        // 7. Footer
+        bytes.push(ESC, 0x61, 0x01); // Center Align
+        writeStr("Thank you for dining at\n");
+        bytes.push(ESC, 0x45, 0x01);
+        writeStr("Sodanaraga!\n");
+        bytes.push(ESC, 0x45, 0x00);
+        writeStr("Visit again.\n");
+        writeStr(doubleDivider);
+
+        // Feed & Cut
+        bytes.push(ESC, 0x64, 0x04);
+        bytes.push(GS, 0x56, 0x41, 0x10);
+
+        return new Uint8Array(bytes);
+      }
+    }
+
+    const btPrinter = new BluetoothThermalPrinter();
+
+    /* ==========================================================================
+       F. APPLICATION CORE CONTROLLER
+       ========================================================================== */
+    const App = {
+      dishes: [],
+      cart: {},
+      currentCategory: 'all',
+      searchQuery: '',
+      selectedTable: 'Table 1',
+      paymentMethod: 'Cash',
+      discountPercent: 0,
+      taxEnabled: true,
+      paperSize: '58mm',
+      lastOrder: null,
+
+      init() {
+        this.dishes = Storage.getDishes();
+        this.paperSize = Storage.getPaperSize();
+        this.applyPaperSize(this.paperSize);
+        this.bindEvents();
+        this.renderMenuGrid();
+        this.renderAdminList();
+        this.updateCartUI();
+        this.updateTokenPill();
+      },
+
+      updateTokenPill() {
+        const token = Storage.peekCurrentToken();
+        const pill = document.getElementById('current-token-pill');
+        if (pill) pill.textContent = `Token #${token}`;
+      },
+
+      applyPaperSize(size) {
+        this.paperSize = size;
+        Storage.setPaperSize(size);
+        document.documentElement.style.setProperty('--print-paper-width', size);
+        
+        document.querySelectorAll('.paper-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.size === size);
+        });
+
+        const receiptBox = document.getElementById('receipt-preview-content');
+        if (receiptBox) {
+          receiptBox.classList.toggle('size-80mm', size === '80mm');
+        }
+      },
+
+      // -----------------------------------------------------------------------
+      // MENU RENDERING (POS)
+      // -----------------------------------------------------------------------
+      renderMenuGrid() {
+        const container = document.getElementById('dishes-container');
+        container.innerHTML = '';
+
+        const filtered = this.dishes.filter(dish => {
+          const matchCat = this.currentCategory === 'all' || dish.category === this.currentCategory;
+          const matchSearch = !this.searchQuery || dish.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+          return matchCat && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:48px 12px;color:var(--text-muted);">
+              <svg style="width:52px;height:52px;color:#cbd5e1;margin-bottom:10px;" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+              <h3 style="font-size:1.1rem;color:var(--text-main);margin-bottom:4px;">No dishes found</h3>
+              <p style="font-size:0.82rem;">Try another search term or switch category</p>
+            </div>
+          `;
+          return;
+        }
+
+        filtered.forEach(dish => {
+          const qtyInCart = this.cart[dish.id] || 0;
+          const isOut = !dish.inStock;
+
+          const card = document.createElement('div');
+          card.className = `dish-card ${isOut ? 'out-of-stock' : ''}`;
+          card.innerHTML = `
+            <div class="dish-img-wrap">
+              <img src="${dish.image || FALLBACK_DISH_SVG}" onerror="this.onerror=null;this.src=FALLBACK_DISH_SVG;" class="dish-img" alt="${dish.name}" loading="lazy">
+              <div class="dish-type-badge">
+                <span class="type-dot ${dish.diet === 'veg' ? 'veg' : 'non-veg'}"></span>
+              </div>
+              <div class="cart-qty-badge" id="badge-${dish.id}" style="${qtyInCart > 0 ? 'display:block;' : ''}">
+                ${qtyInCart} in cart
+              </div>
+              ${isOut ? '<div class="stock-tag">Out of Stock</div>' : ''}
+            </div>
+            <div class="dish-body">
+              <div>
+                <div class="dish-category">${dish.category}</div>
+                <div class="dish-name" title="${dish.name}">${dish.name}</div>
+              </div>
+              <div class="dish-footer">
+                <div class="dish-price">₹${dish.price}</div>
+                <button class="add-btn" data-id="${dish.id}" ${isOut ? 'disabled' : ''}>
+                  <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  Add
+                </button>
+              </div>
+            </div>
+          `;
+
+          card.querySelector('.add-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!dish.inStock) return;
+            this.addToCart(dish.id);
+          });
+
+          card.addEventListener('click', () => {
+            if (!dish.inStock) return;
+            this.addToCart(dish.id);
+          });
+
+          container.appendChild(card);
+        });
+      },
+
+      // -----------------------------------------------------------------------
+      // CART STATE MANAGEMENT
+      // -----------------------------------------------------------------------
+      addToCart(dishId) {
+        audioFx.playBip();
+        this.cart[dishId] = (this.cart[dishId] || 0) + 1;
+        this.updateCartUI();
+        this.updateDishBadges();
+      },
+
+      updateCartQty(dishId, delta) {
+        if (!this.cart[dishId]) return;
+        audioFx.playBip();
+        this.cart[dishId] += delta;
+        if (this.cart[dishId] <= 0) {
+          delete this.cart[dishId];
+        }
+        this.updateCartUI();
+        this.updateDishBadges();
+      },
+
+      clearCart() {
+        this.cart = {};
+        this.updateCartUI();
+        this.updateDishBadges();
+        showToast('Cart cleared', '🗑️');
+      },
+
+      updateDishBadges() {
+        this.dishes.forEach(dish => {
+          const badge = document.getElementById(`badge-${dish.id}`);
+          if (badge) {
+            const count = this.cart[dish.id] || 0;
+            badge.style.display = count > 0 ? 'block' : 'none';
+            badge.textContent = `${count} in cart`;
+          }
+        });
+      },
+
+      calculateTotals() {
+        let subtotal = 0;
+        let totalItems = 0;
+        const items = [];
+
+        for (const [dishId, qty] of Object.entries(this.cart)) {
+          const dish = this.dishes.find(d => d.id === dishId);
+          if (dish) {
+            subtotal += dish.price * qty;
+            totalItems += qty;
+            items.push({
+              id: dish.id,
+              name: dish.name,
+              price: dish.price,
+              qty: qty
+            });
+          }
+        }
+
+        const discountAmt = (subtotal * this.discountPercent) / 100;
+        const discountedSubtotal = Math.max(0, subtotal - discountAmt);
+        const taxAmt = this.taxEnabled ? (discountedSubtotal * 0.05) : 0;
+        
+        const rawTotal = discountedSubtotal + taxAmt;
+        const grandTotal = Math.round(rawTotal);
+        const roundOff = grandTotal - rawTotal;
+
+        return {
+          items,
+          totalItems,
+          subtotal,
+          discountPercent: this.discountPercent,
+          discountAmt,
+          taxAmt,
+          roundOff,
+          grandTotal
+        };
+      },
+
+      updateCartUI() {
+        const totals = this.calculateTotals();
+
+        // 1. Floating Cart Bar (Mobile)
+        const floatBar = document.getElementById('floating-cart-bar');
+        const floatCount = document.getElementById('float-cart-count');
+        const floatTotal = document.getElementById('float-cart-total');
+        const floatSummary = document.getElementById('float-cart-summary');
+
+        if (totals.totalItems > 0) {
+          floatBar.classList.remove('hidden');
+          floatCount.textContent = totals.totalItems;
+          floatTotal.textContent = `₹${totals.grandTotal.toFixed(2)}`;
+          floatSummary.textContent = `${totals.totalItems} item${totals.totalItems > 1 ? 's' : ''} • Tap to Bill`;
+        } else {
+          floatBar.classList.add('hidden');
+        }
+
+        // 2. Cart Items Drawer List
+        const itemsContainer = document.getElementById('cart-items-container');
+        if (totals.totalItems === 0) {
+          itemsContainer.innerHTML = `
+            <div class="cart-empty-state">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12z"/></svg>
+              <strong>Order is empty</strong>
+              <p style="font-size:0.75rem;">Tap any dish to add to this order</p>
+            </div>
+          `;
+        } else {
+          itemsContainer.innerHTML = '';
+          totals.items.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'cart-item-row';
+            row.innerHTML = `
+              <div class="cart-item-info">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-sub">₹${item.price} × ${item.qty}</div>
+              </div>
+              <div class="qty-control">
+                <button class="qty-btn" data-id="${item.id}" data-action="dec">−</button>
+                <span class="qty-value">${item.qty}</span>
+                <button class="qty-btn" data-id="${item.id}" data-action="inc">+</button>
+              </div>
+              <div class="cart-item-total">₹${item.price * item.qty}</div>
+            `;
+
+            row.querySelector('[data-action="dec"]').addEventListener('click', (e) => {
+              e.stopPropagation();
+              this.updateCartQty(item.id, -1);
+            });
+            row.querySelector('[data-action="inc"]').addEventListener('click', (e) => {
+              e.stopPropagation();
+              this.updateCartQty(item.id, 1);
+            });
+
+            itemsContainer.appendChild(row);
+          });
+        }
+
+        // 3. Billing Calculations
+        document.getElementById('sum-subtotal').textContent = `₹${totals.subtotal.toFixed(2)}`;
+        document.getElementById('sum-discount').textContent = `-₹${totals.discountAmt.toFixed(2)}`;
+        
+        const rowGst = document.getElementById('row-gst');
+        if (this.taxEnabled) {
+          rowGst.style.display = 'flex';
+          document.getElementById('sum-tax').textContent = `+₹${totals.taxAmt.toFixed(2)}`;
+        } else {
+          rowGst.style.display = 'none';
+        }
+
+        document.getElementById('sum-roundoff').textContent = `${totals.roundOff >= 0 ? '+' : ''}₹${totals.roundOff.toFixed(2)}`;
+        document.getElementById('sum-grandtotal').textContent = `₹${totals.grandTotal.toFixed(2)}`;
+      },
+
+      // -----------------------------------------------------------------------
+      // MENU ADMIN LIST & MANAGEMENT
+      // -----------------------------------------------------------------------
+      renderAdminList() {
+        const container = document.getElementById('admin-dishes-container');
+        container.innerHTML = '';
+
+        this.dishes.forEach((dish) => {
+          const row = document.createElement('div');
+          row.className = 'dish-admin-row';
+          row.innerHTML = `
+            <img src="${dish.image || FALLBACK_DISH_SVG}" onerror="this.onerror=null;this.src=FALLBACK_DISH_SVG;" class="dish-admin-thumb" alt="${dish.name}">
+            <div class="dish-admin-info">
+              <div class="dish-admin-title">
+                <span class="type-dot ${dish.diet === 'veg' ? 'veg' : 'non-veg'}"></span>
+                <span>${dish.name}</span>
+              </div>
+              <div class="dish-admin-meta">
+                ${dish.category} • <strong style="color:var(--text-main);">₹${dish.price}</strong> • 
+                <span style="color:${dish.inStock ? 'var(--accent)' : 'var(--accent-red)'};font-weight:700;">
+                  ${dish.inStock ? 'In Stock' : 'Out of Stock'}
+                </span>
+              </div>
+            </div>
+            <div class="dish-admin-actions">
+              <!-- Quick Stock Toggle -->
+              <label class="switch" title="Toggle Daily In-Stock">
+                <input type="checkbox" class="admin-stock-toggle" data-id="${dish.id}" ${dish.inStock ? 'checked' : ''}>
+                <span class="slider"></span>
+              </label>
+
+              <!-- Edit Dish Button -->
+              <button class="btn-icon" data-id="${dish.id}" data-action="edit" title="Edit Dish">
+                <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              </button>
+
+              <!-- Delete Dish Button -->
+              <button class="btn-icon" data-id="${dish.id}" data-action="delete" title="Delete Dish">
+                <svg style="width:16px;height:16px;color:var(--accent-red);" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+              </button>
+            </div>
+          `;
+
+          // Stock toggle
+          row.querySelector('.admin-stock-toggle').addEventListener('change', (e) => {
+            dish.inStock = e.target.checked;
+            Storage.setDishes(this.dishes);
+            this.renderMenuGrid();
+            this.renderAdminList();
+            showToast(`${dish.name}: ${dish.inStock ? 'In Stock' : 'Out of Stock'}`);
+          });
+
+          // Edit
+          row.querySelector('[data-action="edit"]').addEventListener('click', () => {
+            this.openDishModal(dish);
+          });
+
+          // Delete
+          row.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            if (confirm(`Delete "${dish.name}" from menu?`)) {
+              this.dishes = this.dishes.filter(d => d.id !== dish.id);
+              delete this.cart[dish.id];
+              Storage.setDishes(this.dishes);
+              this.renderMenuGrid();
+              this.renderAdminList();
+              this.updateCartUI();
+              showToast(`Deleted ${dish.name}`, '🗑️');
+            }
+          });
+
+          container.appendChild(row);
+        });
+      },
+
+      openDishModal(dish = null) {
+        const modal = document.getElementById('dish-modal');
+        const title = document.getElementById('dish-modal-title');
+        const formId = document.getElementById('dish-form-id');
+        const formName = document.getElementById('dish-form-name');
+        const formCategory = document.getElementById('dish-form-category');
+        const formPrice = document.getElementById('dish-form-price');
+        const formDiet = document.getElementById('dish-form-diet');
+        const formStock = document.getElementById('dish-form-stock');
+        const formUrl = document.getElementById('dish-form-url');
+        const preview = document.getElementById('photo-preview');
+        const prompt = document.getElementById('photo-prompt');
+
+        if (dish) {
+          title.textContent = 'Edit Dish';
+          formId.value = dish.id;
+          formName.value = dish.name;
+          formCategory.value = dish.category;
+          formPrice.value = dish.price;
+          formDiet.value = dish.diet;
+          formStock.value = dish.inStock ? 'true' : 'false';
+          formUrl.value = dish.image.startsWith('data:') ? '' : dish.image;
+          if (dish.image) {
+            preview.src = dish.image;
+            preview.style.display = 'block';
+            prompt.style.display = 'none';
+          } else {
+            preview.style.display = 'none';
+            prompt.style.display = 'flex';
+          }
+        } else {
+          title.textContent = 'Add New Dish';
+          formId.value = '';
+          document.getElementById('dish-form').reset();
+          formStock.value = 'true';
+          preview.src = '';
+          preview.style.display = 'none';
+          prompt.style.display = 'flex';
+        }
+
+        modal.classList.add('open');
+      },
+
+      closeDishModal() {
+        document.getElementById('dish-modal').classList.remove('open');
+      },
+
+      // Client-side Canvas Image Compression
+      compressImageFile(file, maxDim = 400, quality = 0.72) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              let width = img.width;
+              let height = img.height;
+
+              if (width > height) {
+                if (width > maxDim) {
+                  height = Math.round((height * maxDim) / width);
+                  width = maxDim;
+                }
+              } else {
+                if (height > maxDim) {
+                  width = Math.round((width * maxDim) / height);
+                  height = maxDim;
+                }
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      },
+
+      // -----------------------------------------------------------------------
+      // CHECKOUT & RECEIPT ENGINE
+      // -----------------------------------------------------------------------
+      createOrderData() {
+        const totals = this.calculateTotals();
+        if (totals.items.length === 0) return null;
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+        const invoiceNo = Storage.getNextInvoice();
+        const tokenNo = Storage.getNextToken();
+        const custName = document.getElementById('customer-name').value.trim();
+        const custPhone = document.getElementById('customer-phone').value.trim();
+
+        const order = {
+          invoiceNo: invoiceNo,
+          tokenNo: tokenNo,
+          date: dateStr,
+          time: timeStr,
+          table: this.selectedTable,
+          customerName: custName,
+          customerPhone: custPhone,
+          paymentMethod: this.paymentMethod,
+          ...totals
+        };
+
+        return order;
+      },
+
+      generateReceiptHTML(order) {
+        return `
+          <div class="receipt-header">
+            <div class="receipt-brand">SODANARAGA</div>
+            <div class="receipt-sub">Authentic Food & Flavors</div>
+            <div class="receipt-sub">Phone: +91 98765 43210</div>
+            <div class="receipt-divider"></div>
+          </div>
+
+          <div class="receipt-meta">
+            <span><strong>Inv:</strong> #${order.invoiceNo}</span>
+            <span><strong>Token:</strong> #${order.tokenNo}</span>
+          </div>
+          <div class="receipt-meta">
+            <span>${order.date}</span>
+            <span>${order.time}</span>
+          </div>
+          <div class="receipt-meta">
+            <span><strong>Type:</strong> ${order.table}</span>
+            <span>${order.customerName ? order.customerName : ''}</span>
+          </div>
+          <div class="receipt-divider"></div>
+
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th class="text-center">Qty</th>
+                <th class="text-right">Rate</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td class="text-center">${item.qty}</td>
+                  <td class="text-right">${item.price}</td>
+                  <td class="text-right">${item.qty * item.price}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div class="receipt-divider"></div>
+
+          <div class="receipt-totals">
+            <div class="receipt-total-row">
+              <span>Subtotal:</span>
+              <span>Rs. ${order.subtotal.toFixed(2)}</span>
+            </div>
+            ${order.discountAmt > 0 ? `
+              <div class="receipt-total-row">
+                <span>Discount (${order.discountPercent}%):</span>
+                <span>-Rs. ${order.discountAmt.toFixed(2)}</span>
+              </div>
+            ` : ''}
+            ${order.taxAmt > 0 ? `
+              <div class="receipt-total-row">
+                <span>CGST (2.5%):</span>
+                <span>+Rs. ${(order.taxAmt / 2).toFixed(2)}</span>
+              </div>
+              <div class="receipt-total-row">
+                <span>SGST (2.5%):</span>
+                <span>+Rs. ${(order.taxAmt / 2).toFixed(2)}</span>
+              </div>
+            ` : ''}
+            ${order.roundOff !== 0 ? `
+              <div class="receipt-total-row">
+                <span>Round Off:</span>
+                <span>${order.roundOff >= 0 ? '+' : ''}Rs. ${order.roundOff.toFixed(2)}</span>
+              </div>
+            ` : ''}
+            <div class="receipt-total-row receipt-grand-total">
+              <span>GRAND TOTAL:</span>
+              <span>Rs. ${order.grandTotal.toFixed(2)}</span>
+            </div>
+            ${order.paymentMethod ? `
+              <div class="receipt-total-row" style="margin-top:3px;font-size:10px;">
+                <span>Payment:</span>
+                <span>${order.paymentMethod} (Paid)</span>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="receipt-footer">
+            <div>Thank you for dining at</div>
+            <div style="font-weight:bold;margin:2px 0;">Sodanaraga!</div>
+            <div>Visit again.</div>
+            <div class="receipt-divider" style="margin-top:8px;"></div>
+          </div>
+        `;
+      },
+
+      showReceiptModal(order) {
+        this.lastOrder = order;
+        const html = this.generateReceiptHTML(order);
+        document.getElementById('receipt-preview-content').innerHTML = html;
+        document.getElementById('pure-print-content').innerHTML = html;
+        document.getElementById('receipt-modal').classList.add('open');
+      },
+
+      closeReceiptModal() {
+        document.getElementById('receipt-modal').classList.remove('open');
+      },
+
+      // Primary Checkout Flow: Print Receipt via System Print & Clear
+      checkoutAndPrint() {
+        const totals = this.calculateTotals();
+        if (totals.totalItems === 0) {
+          showToast('Please add items to order before checkout', '⚠️');
+          return;
+        }
+
+        const order = this.createOrderData();
+        Storage.saveOrder(order);
+        audioFx.playChime();
+        this.updateTokenPill();
+
+        const html = this.generateReceiptHTML(order);
+        document.getElementById('receipt-preview-content').innerHTML = html;
+        document.getElementById('pure-print-content').innerHTML = html;
+        this.lastOrder = order;
+
+        // Clear cart
+        this.cart = {};
+        this.updateCartUI();
+        this.updateDishBadges();
+        this.closeCartDrawer();
+
+        showToast(`Order #${order.invoiceNo} Placed! Opening Print Dialog...`, '🖨️');
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      },
+
+      // Direct Bluetooth Thermal Print
+      async checkoutAndBtPrint() {
+        const totals = this.calculateTotals();
+        if (totals.totalItems === 0) {
+          showToast('Please add items to order before checkout', '⚠️');
+          return;
+        }
+
+        const order = this.createOrderData();
+        Storage.saveOrder(order);
+        audioFx.playChime();
+        this.updateTokenPill();
+
+        this.lastOrder = order;
+        const bytes = btPrinter.encodeReceipt(order, this.paperSize);
+
+        const ok = await btPrinter.printRaw(bytes);
+        if (!ok) {
+          // Graceful fallback to native print
+          showToast('Switching to native print dialog...', '🖨️');
+          const html = this.generateReceiptHTML(order);
+          document.getElementById('receipt-preview-content').innerHTML = html;
+          document.getElementById('pure-print-content').innerHTML = html;
+          setTimeout(() => window.print(), 350);
+        }
+
+        // Clear cart
+        this.cart = {};
+        this.updateCartUI();
+        this.updateDishBadges();
+        this.closeCartDrawer();
+      },
+
+      // -----------------------------------------------------------------------
+      // ORDER HISTORY MODAL
+      // -----------------------------------------------------------------------
+      openHistoryModal() {
+        const modal = document.getElementById('history-modal');
+        const list = document.getElementById('history-items-list');
+        const stats = document.getElementById('history-summary-stats');
+        const history = Storage.getHistory();
+
+        let totalRevenue = 0;
+        history.forEach(o => totalRevenue += o.grandTotal);
+
+        stats.textContent = `${history.length} Invoices Recorded (Total: ₹${totalRevenue.toFixed(0)})`;
+
+        if (history.length === 0) {
+          list.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted);">No orders recorded yet.</div>`;
+        } else {
+          list.innerHTML = '';
+          history.forEach(order => {
+            const card = document.createElement('div');
+            card.style.cssText = `
+              background: #fff;
+              border: 1px solid var(--border);
+              border-radius: var(--radius-md);
+              padding: 10px 14px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 10px;
+            `;
+            card.innerHTML = `
+              <div>
+                <div style="font-weight:800;font-size:0.95rem;color:var(--text-main);">
+                  #${order.invoiceNo} • Token #${order.tokenNo}
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">
+                  ${order.date} ${order.time} • ${order.table} • ${order.totalItems} Items
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="font-weight:800;font-size:1.05rem;color:var(--primary-dark);">
+                  ₹${order.grandTotal}
+                </div>
+                <button class="btn-secondary reprint-btn" style="padding:4px 8px;min-height:32px;font-size:0.75rem;">
+                  🖨️ Slip
+                </button>
+              </div>
+            `;
+
+            card.querySelector('.reprint-btn').addEventListener('click', () => {
+              this.showReceiptModal(order);
+            });
+
+            list.appendChild(card);
+          });
+        }
+
+        modal.classList.add('open');
+      },
+
+      closeHistoryModal() {
+        document.getElementById('history-modal').classList.remove('open');
+      },
+
+      // -----------------------------------------------------------------------
+      // DRAWER MOBILE CONTROLS
+      // -----------------------------------------------------------------------
+      openCartDrawer() {
+        document.getElementById('cart-drawer-container').classList.add('open');
+      },
+
+      closeCartDrawer() {
+        document.getElementById('cart-drawer-container').classList.remove('open');
+      },
+
+      // -----------------------------------------------------------------------
+      // EVENT BINDINGS
+      // -----------------------------------------------------------------------
+      bindEvents() {
+        // Navigation Tabs (POS / Admin / History)
+        const tabPos = document.getElementById('tab-pos');
+        const tabAdmin = document.getElementById('tab-admin');
+        const tabHistory = document.getElementById('tab-history');
+        const posView = document.getElementById('pos-view');
+        const adminView = document.getElementById('admin-view');
+        const mainWrapper = document.getElementById('main-wrapper');
+        const cartDrawerContainer = document.getElementById('cart-drawer-container');
+
+        const switchToPos = () => {
+          tabPos.classList.add('active');
+          tabAdmin.classList.remove('active');
+          posView.style.display = 'flex';
+          adminView.classList.remove('active');
+          adminView.style.display = 'none';
+          mainWrapper.classList.remove('full-width');
+          cartDrawerContainer.style.display = '';
+        };
+
+        const switchToAdmin = () => {
+          tabAdmin.classList.add('active');
+          tabPos.classList.remove('active');
+          posView.style.display = 'none';
+          adminView.classList.add('active');
+          adminView.style.display = 'flex';
+          mainWrapper.classList.add('full-width');
+          cartDrawerContainer.style.display = 'none';
+        };
+
+        tabPos.addEventListener('click', switchToPos);
+        tabAdmin.addEventListener('click', switchToAdmin);
+        tabHistory.addEventListener('click', () => this.openHistoryModal());
+        document.getElementById('btn-brand-home').addEventListener('click', switchToPos);
+
+        // Live Search Input
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('btn-search-clear');
+        searchInput.addEventListener('input', (e) => {
+          this.searchQuery = e.target.value.trim();
+          searchClear.style.display = this.searchQuery ? 'block' : 'none';
+          this.renderMenuGrid();
+        });
+        searchClear.addEventListener('click', () => {
+          searchInput.value = '';
+          this.searchQuery = '';
+          searchClear.style.display = 'none';
+          this.renderMenuGrid();
+        });
+
+        // Category Filter Pills
+        const pills = document.querySelectorAll('#category-pills .cat-pill');
+        pills.forEach(pill => {
+          pill.addEventListener('click', () => {
+            pills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            this.currentCategory = pill.dataset.cat;
+            this.renderMenuGrid();
+          });
+        });
+
+        // Floating Cart Bar (Mobile)
+        document.getElementById('floating-cart-bar').addEventListener('click', () => {
+          this.openCartDrawer();
+        });
+
+        // Cart Drawer Closing
+        document.getElementById('cart-backdrop').addEventListener('click', () => {
+          this.closeCartDrawer();
+        });
+        document.getElementById('drag-handle').addEventListener('click', () => {
+          this.closeCartDrawer();
+        });
+        document.getElementById('btn-close-cart').addEventListener('click', () => {
+          this.closeCartDrawer();
+        });
+
+        // Mobile Swipe Down to Dismiss Drawer
+        const drawer = document.getElementById('cart-drawer');
+        let touchStartY = 0;
+        let touchMoveY = 0;
+        drawer.addEventListener('touchstart', (e) => {
+          touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        drawer.addEventListener('touchmove', (e) => {
+          touchMoveY = e.touches[0].clientY;
+        }, { passive: true });
+
+        drawer.addEventListener('touchend', () => {
+          if (touchMoveY - touchStartY > 75) {
+            this.closeCartDrawer();
+          }
+          touchStartY = 0;
+          touchMoveY = 0;
+        });
+
+        // Table Selection Chips
+        const tableChips = document.querySelectorAll('.table-chip');
+        tableChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            tableChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            this.selectedTable = chip.dataset.table;
+          });
+        });
+
+        // Payment Method Chips
+        const paymentChips = document.querySelectorAll('.payment-chip');
+        paymentChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            paymentChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            this.paymentMethod = chip.dataset.pay;
+          });
+        });
+
+        // Discount Chips
+        const discChips = document.querySelectorAll('.chip-btn:not(#btn-custom-disc)');
+        discChips.forEach(chip => {
+          chip.addEventListener('click', () => {
+            document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            this.discountPercent = parseFloat(chip.dataset.disc) || 0;
+            this.updateCartUI();
+          });
+        });
+
+        document.getElementById('btn-custom-disc').addEventListener('click', () => {
+          const val = prompt('Enter custom discount % (0 - 100):', this.discountPercent.toString());
+          if (val !== null) {
+            const num = parseFloat(val);
+            if (!isNaN(num) && num >= 0 && num <= 100) {
+              document.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('active'));
+              const customBtn = document.getElementById('btn-custom-disc');
+              customBtn.classList.add('active');
+              customBtn.textContent = `${num}%`;
+              this.discountPercent = num;
+              this.updateCartUI();
+            }
+          }
+        });
+
+        // GST Toggle
+        const taxToggle = document.getElementById('tax-toggle');
+        taxToggle.addEventListener('change', (e) => {
+          this.taxEnabled = e.target.checked;
+          this.updateCartUI();
+        });
+
+        // Clear Cart
+        document.getElementById('btn-clear-cart').addEventListener('click', () => {
+          if (Object.keys(this.cart).length > 0) {
+            if (confirm('Clear all items from current order?')) {
+              this.clearCart();
+            }
+          }
+        });
+
+        // Primary Print & Settle
+        document.getElementById('btn-print-bill').addEventListener('click', () => {
+          this.checkoutAndPrint();
+        });
+
+        // Bluetooth Quick Print
+        document.getElementById('btn-bt-quick-print').addEventListener('click', () => {
+          this.checkoutAndBtPrint();
+        });
+
+        // Bluetooth Connect in Header
+        document.getElementById('btn-bt-connect').addEventListener('click', () => {
+          if (btPrinter.isConnected) {
+            if (confirm(`Connected to ${btPrinter.device ? btPrinter.device.name : 'printer'}. Disconnect?`)) {
+              btPrinter.disconnect();
+              showToast('Bluetooth printer disconnected');
+            }
+          } else {
+            btPrinter.connect();
+          }
+        });
+
+        // Preview Thermal Slip
+        document.getElementById('btn-preview-receipt').addEventListener('click', () => {
+          const totals = this.calculateTotals();
+          if (totals.totalItems === 0) {
+            showToast('Add items to order before previewing slip', '⚠️');
+            return;
+          }
+          const order = {
+            invoiceNo: Storage.peekCurrentToken() + 1000,
+            tokenNo: Storage.peekCurrentToken(),
+            date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+            time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
+            table: this.selectedTable,
+            customerName: document.getElementById('customer-name').value.trim(),
+            paymentMethod: this.paymentMethod,
+            ...totals
+          };
+          this.showReceiptModal(order);
+        });
+
+        // Paper Size Switcher
+        document.querySelectorAll('.paper-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            this.applyPaperSize(btn.dataset.size);
+          });
+        });
+
+        // Receipt Modal Print Buttons
+        document.getElementById('btn-modal-system-print').addEventListener('click', () => {
+          window.print();
+        });
+
+        document.getElementById('btn-modal-bt-print').addEventListener('click', async () => {
+          if (this.lastOrder) {
+            const bytes = btPrinter.encodeReceipt(this.lastOrder, this.paperSize);
+            await btPrinter.printRaw(bytes);
+          }
+        });
+
+        document.getElementById('btn-close-receipt-modal').addEventListener('click', () => {
+          this.closeReceiptModal();
+        });
+
+        // Admin: Add Dish
+        document.getElementById('btn-add-dish').addEventListener('click', () => {
+          this.openDishModal();
+        });
+        document.getElementById('btn-close-dish-modal').addEventListener('click', () => {
+          this.closeDishModal();
+        });
+        document.getElementById('btn-cancel-dish').addEventListener('click', () => {
+          this.closeDishModal();
+        });
+
+        // Admin: Restore Defaults
+        document.getElementById('btn-reset-menu').addEventListener('click', () => {
+          if (confirm('Restore default Sodanaraga menu items?')) {
+            this.dishes = JSON.parse(JSON.stringify(DEFAULT_DISHES));
+            Storage.setDishes(this.dishes);
+            this.cart = {};
+            this.renderMenuGrid();
+            this.renderAdminList();
+            this.updateCartUI();
+            showToast('Default menu restored', '🍽️');
+          }
+        });
+
+        // Camera / Gallery Photo Picker
+        const fileInput = document.getElementById('dish-file-input');
+        const uploadZone = document.getElementById('photo-upload-zone');
+        uploadZone.addEventListener('click', () => {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          try {
+            showToast('Optimizing photo for phone storage...', '📸');
+            const base64 = await this.compressImageFile(file, 400, 0.72);
+            const preview = document.getElementById('photo-preview');
+            preview.src = base64;
+            preview.style.display = 'block';
+            document.getElementById('photo-prompt').style.display = 'none';
+            document.getElementById('dish-form-url').value = '';
+          } catch(err) {
+            showToast('Failed to load image', '❌');
+          }
+        });
+
+        // URL Image Loader
+        document.getElementById('btn-apply-url').addEventListener('click', () => {
+          const url = document.getElementById('dish-form-url').value.trim();
+          if (url) {
+            const preview = document.getElementById('photo-preview');
+            preview.src = url;
+            preview.style.display = 'block';
+            document.getElementById('photo-prompt').style.display = 'none';
+          }
+        });
+
+        // Save Dish Form
+        document.getElementById('dish-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const id = document.getElementById('dish-form-id').value;
+          const name = document.getElementById('dish-form-name').value.trim();
+          const category = document.getElementById('dish-form-category').value;
+          const price = parseFloat(document.getElementById('dish-form-price').value) || 0;
+          const diet = document.getElementById('dish-form-diet').value;
+          const inStock = document.getElementById('dish-form-stock').value === 'true';
+          const previewSrc = document.getElementById('photo-preview').src;
+          const urlSrc = document.getElementById('dish-form-url').value.trim();
+
+          const image = (previewSrc && previewSrc !== window.location.href && !previewSrc.endsWith('#')) 
+            ? previewSrc 
+            : (urlSrc || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60');
+
+          if (id) {
+            const index = this.dishes.findIndex(d => d.id === id);
+            if (index !== -1) {
+              this.dishes[index] = { ...this.dishes[index], name, category, price, diet, inStock, image };
+              showToast(`Updated "${name}"`, '✓');
+            }
+          } else {
+            const newDish = {
+              id: 'dish-' + Date.now(),
+              name,
+              category,
+              price,
+              diet,
+              inStock,
+              image
+            };
+            this.dishes.unshift(newDish);
+            showToast(`Added "${name}" to menu`, '✓');
+          }
+
+          Storage.setDishes(this.dishes);
+          this.renderMenuGrid();
+          this.renderAdminList();
+          this.updateCartUI();
+          this.closeDishModal();
+        });
+
+        // History Modal
+        document.getElementById('btn-close-history-modal').addEventListener('click', () => {
+          this.closeHistoryModal();
+        });
+        document.getElementById('btn-clear-history').addEventListener('click', () => {
+          if (confirm('Clear sales and invoice history?')) {
+            Storage.clearHistory();
+            this.openHistoryModal();
+            showToast('Sales history cleared', '🗑️');
+          }
+        });
+      }
+    };
+
+    // Initialize application on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      App.init();
+    });
+  </script>
+</body>
+</html>
