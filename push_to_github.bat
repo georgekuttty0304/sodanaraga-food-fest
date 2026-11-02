@@ -1,8 +1,8 @@
 @echo off
-title Push to GitHub - Sodanaraga Food Fest
+title Push to GitHub - Sodanaranga Food Fest
 cd /d "%~dp0"
 echo ========================================================
-echo       Pushing Sodanaraga POS to GitHub
+echo       Pushing Sodanaranga POS to GitHub
 echo       Repository: https://github.com/georgekuttty0304/sodanaraga-food-fest.git
 echo ========================================================
 echo.

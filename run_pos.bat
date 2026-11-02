@@ -1,7 +1,7 @@
 @echo off
-title Sodanaraga POS Launcher
+title Sodanaranga POS Launcher
 echo ==============================================
-echo       Starting Sodanaraga POS & Billing
+echo       Starting Sodanaranga POS & Billing
 echo ==============================================
 echo.
 echo Opening browser...

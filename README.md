@@ -1,6 +1,6 @@
-# Sodanaraga | Point of Sale & Thermal Billing System
+# Sodanaranga | Point of Sale & Thermal Billing System
 
-A modern, fast, mobile-first Point of Sale (POS) and Restaurant Billing Web Application built for **"Sodanaraga"** (Restaurant & Food Fest). It is 100% self-contained in a single file (`index.html`), stores all data locally (`localStorage`), and provides direct dual-printing support for mobile and desktop thermal printers.
+A modern, fast, mobile-first Point of Sale (POS) and Restaurant Billing Web Application built for **"Sodanaranga"** (Restaurant & Food Fest). It is 100% self-contained in a single file (`index.html`), stores all data locally (`localStorage`), and provides direct dual-printing support for mobile and desktop thermal printers.
 
 ---
 
@@ -37,7 +37,7 @@ A modern, fast, mobile-first Point of Sale (POS) and Restaurant Billing Web Appl
 - Connects directly to 58mm or 80mm Bluetooth mini-printers using `navigator.bluetooth`.
 - Supports standard Bluetooth thermal printer GATT services (`0x18F0`, `0xFF00`, `49535343-...`, etc.).
 - Encodes raw **ESC/POS** byte streams:
-  - Center & bold header: **SODANARAGA**
+  - Center & bold header: **SODANARANGA**
   - Itemized tabular formatting with column spacing (32 cols for 58mm, 48 cols for 80mm).
   - Subtotal, Discount, Tax breakdown, Grand Total, and Footer.
   - Paper feed and automatic cut command.
@@ -66,7 +66,7 @@ A modern, fast, mobile-first Point of Sale (POS) and Restaurant Billing Web Appl
 
 ```text
 ================================
-           SODANARAGA           
+           SODANARANGA           
     Authentic Food & Flavors    
      Phone: +91 98765 43210     
 ================================
@@ -91,7 +91,7 @@ GRAND TOTAL:           Rs.918.00
 Payment Mode:    UPI / QR (Paid)
 --------------------------------
     Thank you for dining at
-          Sodanaraga!
+          Sodanaranga!
           Visit again.
 ================================
 ```
