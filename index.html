@@ -60,6 +60,12 @@
       user-select: none;
     }
 
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      width: 100%;
+    }
+
     input, select, textarea {
       user-select: auto;
       font-family: inherit;
@@ -70,6 +76,7 @@
       background-color: var(--bg-main);
       color: var(--text-main);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
@@ -104,6 +111,7 @@
       justify-content: space-between;
       padding: 0 16px;
       box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
     }
 
     .brand-group {
@@ -155,6 +163,60 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    /* Mobile Header Layout Adaptations (< 768px) */
+    @media (max-width: 767px) {
+      .app-header {
+        height: auto;
+        min-height: 56px;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .brand-group {
+        gap: 8px;
+      }
+      .brand-logo-wrap {
+        width: 36px;
+        height: 36px;
+      }
+      .brand-info h1 {
+        font-size: 1.05rem;
+      }
+      .brand-info span {
+        display: none; /* Hide subtitle on phones to save space */
+      }
+      .header-actions {
+        gap: 6px;
+        margin-left: auto;
+      }
+      .role-indicator {
+        padding: 5px 10px !important;
+        font-size: 0.72rem !important;
+        min-height: 34px !important;
+      }
+      .bt-pill {
+        padding: 5px 8px !important;
+        font-size: 0.7rem !important;
+        min-height: 34px !important;
+      }
+      .bt-pill #bt-status-label {
+        display: none; /* Icon + dot only on phone */
+      }
+      .nav-toggle-group {
+        width: 100% !important;
+        order: 3;
+        display: flex;
+        margin-top: 2px;
+      }
+      .nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 6px 4px !important;
+        font-size: 0.76rem !important;
+        min-height: 34px !important;
+      }
     }
 
     /* Role Pill Badge */
@@ -258,27 +320,34 @@
        3. RESPONSIVE MAIN WORKSPACE (TABLET / DESKTOP SPLIT)
        ========================================================================== */
     .main-wrapper {
-      max-width: 1400px;
+      max-width: 100%;
       width: 100%;
       margin: 0 auto;
-      padding: 12px;
+      padding: 10px;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 12px;
       flex: 1;
     }
 
     @media (min-width: 1024px) {
       .main-wrapper {
-        grid-template-columns: 1fr 390px;
-        padding: 20px;
-        gap: 20px;
+        max-width: 1600px;
+        grid-template-columns: 1fr 410px;
+        padding: 20px 24px;
+        gap: 24px;
       }
       .main-wrapper.full-width {
         grid-template-columns: 1fr;
       }
       body {
         padding-bottom: 20px;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .main-wrapper {
+        grid-template-columns: 1fr 440px;
       }
     }
 
@@ -455,22 +524,30 @@
       box-shadow: 0 2px 6px rgba(21, 128, 61, 0.3);
     }
 
-    /* Dishes Grid */
+    /* Dishes Grid (Adaptive Phone & PC Ratios) */
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 340px) {
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (min-width: 640px) {
       .menu-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
       }
     }
 
-    @media (min-width: 1280px) {
+    @media (min-width: 1200px) {
       .menu-grid {
         grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
       }
     }
 
@@ -499,7 +576,7 @@
 
     .dish-img-wrap {
       width: 100%;
-      height: 125px;
+      height: 115px;
       background: #f1f5f9;
       position: relative;
       overflow: hidden;
@@ -508,6 +585,12 @@
     @media (min-width: 768px) {
       .dish-img-wrap {
         height: 140px;
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .dish-img-wrap {
+        height: 155px;
       }
     }
 
@@ -567,15 +650,21 @@
     }
 
     .dish-body {
-      padding: 10px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
       flex: 1;
       justify-content: space-between;
     }
 
+    @media (min-width: 768px) {
+      .dish-body {
+        padding: 12px;
+      }
+    }
+
     .dish-category {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       text-transform: uppercase;
       font-weight: 800;
       color: var(--accent-teal);
@@ -584,7 +673,7 @@
     }
 
     .dish-name {
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 700;
       line-height: 1.25;
       color: var(--text-main);
@@ -592,38 +681,63 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       min-height: 2.3em;
+    }
+
+    @media (min-width: 768px) {
+      .dish-name {
+        font-size: 0.95rem;
+      }
     }
 
     .dish-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 4px;
       margin-top: auto;
       padding-top: 4px;
     }
 
     .dish-price {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 800;
       color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+      .dish-price {
+        font-size: 1.05rem;
+      }
     }
 
     .add-btn {
       background: var(--primary-light);
       color: #166534;
       border: 1px solid rgba(22, 163, 74, 0.25);
-      border-radius: var(--radius-md);
-      padding: 8px 14px;
-      font-size: 0.82rem;
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 0.78rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
-      min-height: 40px;
+      gap: 3px;
+      min-height: 36px;
+      white-space: nowrap;
       transition: all 0.15s ease;
+    }
+
+    @media (min-width: 768px) {
+      .add-btn {
+        padding: 8px 14px;
+        font-size: 0.82rem;
+        min-height: 40px;
+        border-radius: var(--radius-md);
+        gap: 4px;
+      }
     }
 
     .add-btn:active {
@@ -1352,6 +1466,21 @@
       border-bottom: 1px solid var(--border);
     }
 
+    @media (max-width: 480px) {
+      .dish-admin-row {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+      }
+      .dish-admin-actions {
+        width: 100%;
+        justify-content: flex-end;
+        border-top: 1px dashed var(--border);
+        padding-top: 6px;
+        margin-top: 2px;
+      }
+    }
+
     .dish-admin-row:last-child {
       border-bottom: none;
     }
@@ -1412,13 +1541,15 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(13, 40, 24, 0.75);
+      background: rgba(13, 40, 24, 0.8);
       backdrop-filter: blur(4px);
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       opacity: 0;
       visibility: hidden;
       transition: all 0.25s ease;
@@ -1434,13 +1565,14 @@
       border-radius: var(--radius-lg);
       width: 100%;
       max-width: 480px;
-      max-height: 90vh;
+      max-height: calc(100dvh - 28px);
       display: flex;
       flex-direction: column;
       box-shadow: var(--shadow-xl);
       overflow: hidden;
       transform: scale(0.95);
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      margin: auto;
     }
 
     .modal-overlay.open .modal-box {
@@ -1486,11 +1618,17 @@
       padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      font-size: 0.9rem;
+      font-size: 16px; /* Prevents auto zoom in iOS mobile browsers */
       background: var(--bg-surface);
       color: var(--text-main);
       outline: none;
       min-height: 44px;
+    }
+
+    @media (min-width: 768px) {
+      .form-input, .form-select {
+        font-size: 0.9rem;
+      }
     }
     .form-input:focus, .form-select:focus {
       border-color: var(--primary);
@@ -1550,24 +1688,59 @@
        9. ROLE SELECTION SPLASH MODAL (CUSTOMER VS ADMIN)
        ========================================================================== */
     .role-modal-box {
+      width: 100%;
       max-width: 440px;
-      text-align: center;
-      padding: 24px 20px;
+      margin: auto;
+      max-height: calc(100dvh - 28px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px;
       background: #fff;
       border-radius: var(--radius-xl);
       border: 2px solid var(--border);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      text-align: center;
     }
 
     .role-logo-hero {
-      width: 120px;
-      height: 120px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       border: 4px solid var(--accent-lime);
       box-shadow: 0 0 20px rgba(132, 204, 22, 0.4);
       margin: 0 auto 14px auto;
       overflow: hidden;
       background: #0d2818;
+    }
+
+    @media (max-width: 480px) {
+      .role-logo-hero {
+        width: 85px;
+        height: 85px;
+        margin-bottom: 10px;
+      }
+      .role-modal-box h2 {
+        font-size: 1.35rem;
+      }
+      .role-modal-box p {
+        font-size: 0.78rem;
+        margin-bottom: 14px;
+      }
+      .role-select-card {
+        padding: 12px 14px !important;
+        gap: 12px !important;
+      }
+      .role-card-icon {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.25rem !important;
+      }
+      .role-card-text h4 {
+        font-size: 0.95rem !important;
+      }
+      .role-card-text span {
+        font-size: 0.72rem !important;
+      }
     }
 
     .role-logo-hero img {
